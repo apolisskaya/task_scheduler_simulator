@@ -39,7 +39,7 @@ def run_fifo_simulation(processor):
     return 0
 
 
-def run_earliest_deadline_simulation(processor):
+def run_priority_simulation(processor):
     task_queue = queue.PriorityQueue()
     tc.generate_task_and_priority_tuples(task_queue)
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
