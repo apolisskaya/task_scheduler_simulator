@@ -23,11 +23,14 @@ class Processor:
         self.currently_executing_task = None
 
     def run_task(self, task):
-        if task.power_demand < self.battery.power_available and \
-                                self.battery.power_available - task.power_demand > self.battery.power_minimum:
-            print('Task', str(task.id), 'now running on Processor', self.id)
-            self.battery.power_available -= task.power_demand
+        print('Task', str(task.id), 'now running on Processor', self.id)
+        self.battery.power_available -= task.power_demand
+        self.complete_task()
 
     def set_current_task(self, task):
         self.currently_executing_task = task.id
         self.status = 1
+
+    def complete_task(self):
+        self.status = 0
+        self.currently_executing_task = None

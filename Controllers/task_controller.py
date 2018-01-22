@@ -1,12 +1,10 @@
-import random, queue
+import random, queue, datetime
 
 from Models.task_model import Task
 from Models.cpu_model import Processor
 
-task_queue = queue.Queue()
 
-
-def generate_tasks():
+def generate_tasks(task_queue):
     for i in range(0, 20):
         task_queue.put(generate_new_task())
 
