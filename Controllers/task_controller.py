@@ -4,6 +4,12 @@ from Models.task_model import Task
 from Models.cpu_model import Processor
 
 
+def generate_task_and_priority_tuples(task_queue):
+    for i in range(0, 20):
+        new_task = generate_new_task()
+        task_queue.put(new_task.priority, new_task)
+
+
 def generate_tasks(task_queue):
     for i in range(0, 20):
         task_queue.put(generate_new_task())
