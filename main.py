@@ -1,5 +1,8 @@
-from Models.task_model import Task
-from Models.cpu_model import Processor
 from Views import main_view as mv
+from Controllers import task_controller as tc
+from Controllers import simulator_controller as sc
 
-mv.init_main_view()
+import queue
+
+
+sc.run_algorithm_1_simulation(number_of_tasks=5)
