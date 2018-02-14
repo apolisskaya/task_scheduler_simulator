@@ -16,10 +16,8 @@ def process_tasks_in_queue(processor, task_queue):
 
     while not task_queue.empty():
         current_task = task_queue.get()
-
         # check that processor has enough juice to execute the task
-        if current_task.get_power_demand < processor.battery.power_available and processor.battery.power_available - \
-                current_task.get_power_demand > processor.battery.power_minimum:
+        if (current_task.power_demand < processor.battery.power_available) and processor.battery.power_available - current_task.power_demand > processor.battery.power_minimum:
             tc.assign_task_to_processor(task=current_task, processor=processor)
             time.sleep(current_task.execution_time)  # seconds
             processor.run_task(task=current_task)
@@ -65,15 +63,18 @@ def run_earliest_deadline_simulation(processor):
     return 0
 
 
-def run_algorithm_1_simulation(number_of_tasks):
+# Simulations taking some random number of tasks without priority shifting!!!
+def run_algorithm_1_simulation(processor, number_of_tasks):
     # Version 1: Earliest Deadline First, with priority as the first tiebreaker and exec time as the second
     task_queue = queue.Queue()
     task_list = []
+    # TODO: list comprehension possible here?
     for i in range(0, number_of_tasks):
         task_list.append(tc.generate_new_task())
-    task_list.sort(key=operator.attrgetter('deadline'))
-    for each in task_list:
-        print(each.deadline)
+    task_list.sort(key=operator.attrgetter('deadline', 'priority', 'execution_time'))
+    for i in range(0, number_of_tasks):
+        task_queue.put(task_list[i])
+    completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
 
     ps.run_performance_evaluation()
 
@@ -88,7 +89,7 @@ def run_algorithm_2_simulation(number_of_tasks):
     task_list = []
     for i in range(0, number_of_tasks):
         task_list.append(tc.generate_new_task())
-    task_list.sort(key=operator.attrgetter('deadline'))
+    task_list.sort(key=operator.attrgetter('deadline', 'execution_time', 'priority'))
 
     ps.run_performance_evaluation()
 
@@ -101,7 +102,7 @@ def run_algorithm_3_simulation(number_of_tasks):
     task_list = []
     for i in range(0, number_of_tasks):
         task_list.append(tc.generate_new_task())
-    task_list.sort(key=operator.attrgetter('priority'))
+    task_list.sort(key=operator.attrgetter('priority', 'deadline', 'execution_time'))
 
     ps.run_performance_evaluation()
 

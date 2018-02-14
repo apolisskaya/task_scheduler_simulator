@@ -28,9 +28,6 @@ class Task:
                                             other.power_demand, other.priority, other.status, other.deadline, other.id,
                                             other.on_processor, other.hit_deadline, other.execution_time))
 
-    def get_power_demand(self):
-        return self.power_demand
-
     def change_priority(self, new_priority):
         self.priority = new_priority
 
