@@ -5,6 +5,7 @@
 
 import datetime
 
+
 class Task:
 
     def __init__(self, cpu_demand, power_demand, priority, deadline, execution_time, id):
@@ -17,13 +18,16 @@ class Task:
         self.execution_time = execution_time
         self.on_processor = None
         self.hit_deadline = None
+        self.origination_time = datetime.datetime.now()  # record the time when the task is created
+        self.start_time = None
 
     # allows pushing objects with non-unique priority into priority queue
     def __lt__(self, other):
         return ((self.cpu_demand, self.power_demand, self.priority, self.status, self.deadline,
-                 self.id, self.on_processor, self.hit_deadline, self.execution_time) < (other.cpu_demand,
-                                            other.power_demand, other.priority, other.status, other.deadline, other.id,
-                                            other.on_processor, other.hit_deadline, other.execution_time))
+                 self.id, self.on_processor, self.hit_deadline, self.execution_time, self.origination_time,
+                 self.start_time) < (other.cpu_demand, other.power_demand, other.priority, other.status, other.deadline,
+                                     other.id, other.on_processor, other.hit_deadline, other.execution_time,
+                                     other.origination_time, other.start_time))
 
     def change_priority(self, new_priority):
         self.priority = new_priority
@@ -38,6 +42,8 @@ class Task:
         self.on_processor = processor.id
         # task is currently running, so update status accordingly
         self.change_status()
+        # mark the time the task started for average waiting time calculation
+        self.start_time = datetime.datetime.now()
 
     def complete_task(self):
         # check if task was completed on time or not

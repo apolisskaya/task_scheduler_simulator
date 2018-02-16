@@ -23,7 +23,7 @@ class Processor:
         self.currently_executing_task = None
 
     def run_task(self, task):
-        print('Task', str(task.id), 'now running on Processor', self.id)
+        # print('Task', str(task.id), 'now running on Processor', self.id)
         self.battery.power_available -= task.power_demand
         self.complete_task()
 

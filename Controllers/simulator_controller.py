@@ -73,11 +73,11 @@ def run_algorithm_1_simulation(processor, number_of_tasks):
         task_queue.put(task_list[i])
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
 
-    ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
 
     task_queue.queue.clear()
 
-    return 0
+    return percent_completed, percent_hit_deadline, awt
 
 
 def run_algorithm_2_simulation(processor, number_of_tasks):
@@ -89,9 +89,11 @@ def run_algorithm_2_simulation(processor, number_of_tasks):
         task_queue.put(task_list[i])
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
 
-    ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
 
-    return 0
+    task_queue.queue.clear()
+
+    return percent_completed, percent_hit_deadline, awt
 
 
 def run_algorithm_3_simulation(processor, number_of_tasks):
@@ -99,8 +101,12 @@ def run_algorithm_3_simulation(processor, number_of_tasks):
     task_queue = queue.Queue()
     task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
     task_list.sort(key=operator.attrgetter('priority', 'deadline', 'execution_time'))
+    for i in range(0, number_of_tasks):
+        task_queue.put(task_list[i])
 
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
-    ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
 
-    return 0
+    task_queue.queue.clear()
+
+    return percent_completed, percent_hit_deadline, awt
