@@ -3,25 +3,22 @@
 # Priority: 1 to 5, with 1 being lowest, 5 being highest. Priority 0 may be assigned to tasks that will never run.
 # Status: 0 if waiting, 1 if currently being executed, 2 if completed
 
-import itertools, datetime
-
+import datetime
 
 class Task:
-    new_id = itertools.count().__next__()
 
-    def __init__(self, cpu_demand, power_demand, priority, deadline, execution_time):
+    def __init__(self, cpu_demand, power_demand, priority, deadline, execution_time, id):
         self.cpu_demand = cpu_demand
         self.power_demand = power_demand
         self.priority = priority
         self.status = 0
         self.deadline = deadline
-        self.id = Task.new_id
+        self.id = id
         self.execution_time = execution_time
         self.on_processor = None
         self.hit_deadline = None
 
     # allows pushing objects with non-unique priority into priority queue
-    # TODO: change this to properly sort
     def __lt__(self, other):
         return ((self.cpu_demand, self.power_demand, self.priority, self.status, self.deadline,
                  self.id, self.on_processor, self.hit_deadline, self.execution_time) < (other.cpu_demand,
@@ -57,4 +54,5 @@ class Task:
                 print(attribute, str(value))
 
     def __del__(self):
-        print('Task', self.id, 'destroyed. Status', self.status)
+        if self.status != 2:
+            print('Task ', self.id, ' destroyed but never ran. Status', self.status)
