@@ -19,7 +19,7 @@ hit_deadline_sum = 0.00
 awt_sum = 0.00
 for i in range(5):
     processor = cpu_model.Processor(power_available=40, power_max=50)
-    c, h, a = sc.run_algorithm_1_simulation(processor=processor, number_of_tasks=5)
+    c, h, a = sc.run_algorithm_3_simulation(processor=processor, number_of_tasks=5)
     completed_percentage_sum += c
     hit_deadline_sum += h
     awt_sum += a
