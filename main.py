@@ -14,7 +14,7 @@ hit_deadline_sum = 0.00
 awt_sum = 0.00
 for i in range(5):
     processor = cpu_model.Processor(power_available=60, power_max=70)
-    c, h, a = sc.run_algorithm_1_simulation(processor=processor, number_of_tasks=8)
+    c, h, a = sc.run_algorithm_1_simulation(number_of_tasks=12, number_of_processors=4)
     completed_percentage_sum += c
     hit_deadline_sum += h
     awt_sum += a
@@ -23,8 +23,9 @@ print('Completed: ', completed_percentage_sum / 5.0)
 print('Hit Deadline: ', hit_deadline_sum / 5.0)
 print('AWT: ', awt_sum / 5.0)
 
-if PERFORMANCE_LOG_LOCATION:
-    mv.display_performance(PERFORMANCE_LOG_LOCATION)
+# TODO: temporarily commented out until view is fixed
+# if PERFORMANCE_LOG_LOCATION:
+#     mv.display_performance(PERFORMANCE_LOG_LOCATION)
 
 
 # TODO: code below to run simulation where multiple peripherals exist

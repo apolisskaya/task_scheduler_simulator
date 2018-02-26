@@ -16,9 +16,9 @@ def generate_tasks(task_queue):
         task_queue.put(generate_new_task())
 
 
-def generate_new_task(id = 0):
+def generate_new_task(id=0, processor=None):
     # generate new tasks with variable power demand and priority, and variable deadline
-    new_task = Task(cpu_demand=1, power_demand=random.randrange(1, 10),
+    new_task = Task(cpu_demand=1, power_demand=random.randrange(1, 10), processor=processor,
                     priority=random.randrange(0,10), deadline=datetime.datetime.now() +
                     datetime.timedelta(seconds=random.randrange(5, 10)), execution_time=random.randrange(1, 5), id=id)
     return new_task
@@ -27,4 +27,4 @@ def generate_new_task(id = 0):
 # takes in task and processor objects and links them
 def assign_task_to_processor(task, processor):
     processor.set_current_task(task)
-    task.set_processor(processor)
+    task.begin_task()

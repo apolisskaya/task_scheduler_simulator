@@ -36,7 +36,7 @@ def display_performance(filepath):
         f.close()
 
     except Exception as e:
-        print('Something went wrong. Results not recorded.', str(e))
+        print('Main View: Something went wrong. Results not recorded.', str(e))
 
 
 def autolabel(rects, ax):

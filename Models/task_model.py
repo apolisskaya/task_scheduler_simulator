@@ -8,7 +8,7 @@ import datetime
 
 class Task:
 
-    def __init__(self, cpu_demand, power_demand, priority, deadline, execution_time, id):
+    def __init__(self, cpu_demand, power_demand, priority, deadline, execution_time, id, processor=None):
         self.cpu_demand = cpu_demand
         self.power_demand = power_demand
         self.priority = priority
@@ -16,7 +16,7 @@ class Task:
         self.deadline = deadline
         self.id = id
         self.execution_time = execution_time
-        self.on_processor = None
+        self.on_processor = processor
         self.hit_deadline = None
         self.origination_time = datetime.datetime.now()  # record the time when the task is created
         self.start_time = None
@@ -38,10 +38,15 @@ class Task:
     def remove_from_queue(self):
         self.priority = 0
 
-    def set_processor(self, processor):
-        self.on_processor = processor.id
+    def begin_task(self):
         self.change_status()
         self.start_time = datetime.datetime.now()
+
+    def set_processor(self, processor):
+        self.on_processor = processor
+
+    def get_processor(self):
+        return self.on_processor
 
     def complete_task(self):
         if datetime.datetime.now() <= self.deadline:

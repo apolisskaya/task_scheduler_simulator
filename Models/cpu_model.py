@@ -19,14 +19,20 @@ class Battery:
 
 class Processor:
 
+    SUPERCAP_POWER_LOSS_MULTIPLIER = 1  # how fast supercap should lose power
+
     def __init__(self, power_available, power_max, id=0):
         self.status = 0
         self.id = id
         self.battery = Battery(power_available, power_max)
         self.currently_executing_task = None
+        self.supercap = None
 
     def run_task(self, task):
         self.battery.power_available -= task.power_demand
+        # supercap should lose power at a steady rate
+        if self.supercap:
+            self.get_supercap().lose_power(task.execution_time * self.SUPERCAP_POWER_LOSS_MULTIPLIER)
         self.complete_task()
 
     def set_current_task(self, task):
@@ -37,8 +43,15 @@ class Processor:
         self.status = 0
         self.currently_executing_task = None
 
+    def set_supercap(self, supercap):
+        self.supercap = supercap
+
+    def get_supercap(self):
+        return self.supercap
+
 
 class SuperCapacitor:  # the supercap and microprocessor are one object for our purposes here
+
     def __init__(self, power_available, power_max):
         self.battery = Battery(power_available, power_max)
         self.current_processor = None
@@ -64,3 +77,4 @@ class SuperCapacitor:  # the supercap and microprocessor are one object for our 
 
     def add_new_processor(self, processor):
         self.all_processors.append(processor)
+        processor.supercap = self
