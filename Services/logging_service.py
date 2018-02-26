@@ -19,4 +19,4 @@ def record_algorithm_performance(filepath, headings, data_to_record):
 
 
 def file_is_empty(filepath):
-    return os.stat(filepath).st_size==0
+    return os.stat(filepath).st_size == 0

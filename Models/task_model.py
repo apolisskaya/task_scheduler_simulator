@@ -40,13 +40,10 @@ class Task:
 
     def set_processor(self, processor):
         self.on_processor = processor.id
-        # task is currently running, so update status accordingly
         self.change_status()
-        # mark the time the task started for average waiting time calculation
         self.start_time = datetime.datetime.now()
 
     def complete_task(self):
-        # check if task was completed on time or not
         if datetime.datetime.now() <= self.deadline:
             self.hit_deadline = 1
         else:

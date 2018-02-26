@@ -11,7 +11,8 @@ from Services import performance_service as ps
 # For now, these will just run the simulation with all tasks sent to scheduler at the same time.
 
 
-def process_tasks_in_queue(processor, task_queue):
+#TODO: need to handle charging with multiple peripherals
+def process_tasks_in_queue(processor, task_queue, charging=False, charging_scale=1):
     completed_tasks, failed_tasks = [], []
 
     while not task_queue.empty():
@@ -20,6 +21,9 @@ def process_tasks_in_queue(processor, task_queue):
         if (current_task.power_demand < processor.battery.power_available) and processor.battery.power_available - current_task.power_demand > processor.battery.power_minimum:
             tc.assign_task_to_processor(task=current_task, processor=processor)
             time.sleep(current_task.execution_time)  # seconds
+            # charge the processor and supercap if charging is enabled
+            if charging:
+                processor.battery.charge_capacitor(current_task.execution_time * charging_scale)
             processor.run_task(task=current_task)
             current_task.complete_task()
             completed_tasks.append(current_task)
@@ -64,23 +68,25 @@ def run_earliest_deadline_simulation(processor):
 
 
 # Simulations taking some random number of tasks without priority shifting!!!
-def run_algorithm_1_simulation(processor, number_of_tasks):
+def run_algorithm_1_simulation(processor, number_of_tasks, charging=False):
     # Version 1: Earliest Deadline First, with priority as the first tiebreaker and exec time as the second
     task_queue = queue.Queue()
+
     task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
     task_list.sort(key=operator.attrgetter('deadline', 'priority', 'execution_time'))
     for i in range(0, number_of_tasks):
         task_queue.put(task_list[i])
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
 
-    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
+                                                                                 "Algorithm 1", number_of_tasks)
 
     task_queue.queue.clear()
 
     return percent_completed, percent_hit_deadline, awt
 
 
-def run_algorithm_2_simulation(processor, number_of_tasks):
+def run_algorithm_2_simulation(processor, number_of_tasks, charging=False):
     # Version 2: Earliest Deadline First, with exec time as first tiebreaker and priority as second
     task_queue = queue.Queue()
     task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
@@ -89,14 +95,15 @@ def run_algorithm_2_simulation(processor, number_of_tasks):
         task_queue.put(task_list[i])
     completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
 
-    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
+                                                                                 "Algorithm 2", number_of_tasks)
 
     task_queue.queue.clear()
 
     return percent_completed, percent_hit_deadline, awt
 
 
-def run_algorithm_3_simulation(processor, number_of_tasks):
+def run_algorithm_3_simulation(processor, number_of_tasks, charging=False):
     # Version 3: Priority first, then earliest deadline, then exec time
     task_queue = queue.Queue()
     task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
@@ -104,8 +111,9 @@ def run_algorithm_3_simulation(processor, number_of_tasks):
     for i in range(0, number_of_tasks):
         task_queue.put(task_list[i])
 
-    completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue)
-    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks)
+    completed_tasks, failed_tasks = process_tasks_in_queue(processor, task_queue, charging)
+    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
+                                                                                 "Algorithm 3", number_of_tasks)
 
     task_queue.queue.clear()
 
