@@ -12,9 +12,16 @@ PERFORMANCE_LOG_LOCATION = 'algorithm_performance.csv'
 completed_percentage_sum = 0.00
 hit_deadline_sum = 0.00
 awt_sum = 0.00
-for i in range(5):
+
+SIMULATION_DICT = {
+    0: sc.run_algorithm_1_simulation(number_of_tasks=12, number_of_processors=4),
+    1: sc.run_algorithm_2_simulation(number_of_tasks=12, number_of_processors=4),
+    2: sc.run_algorithm_3_simulation(number_of_tasks=12, number_of_processors=4),
+}
+
+for i in range(3):
     processor = cpu_model.Processor(power_available=60, power_max=70)
-    c, h, a = sc.run_algorithm_1_simulation(number_of_tasks=12, number_of_processors=4)
+    c, h, a = SIMULATION_DICT[i]
     completed_percentage_sum += c
     hit_deadline_sum += h
     awt_sum += a

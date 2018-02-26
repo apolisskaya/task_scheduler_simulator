@@ -73,20 +73,24 @@ def run_algorithm_2_simulation(number_of_tasks, charging=False, number_of_proces
     if number_of_processors < 1 or number_of_tasks < 1:
         print('Cannot have tasks with no peripherals or no tasks')
         return -1
+    else:
+        processor_list = []
+        for i in range(number_of_processors):
+            processor_list.append(cm.Processor(id=i, power_available=60, power_max=70))
 
-    task_queue = queue.Queue()
-    task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
-    task_list.sort(key=operator.attrgetter('deadline', 'execution_time', 'priority'))
-    for i in range(0, number_of_tasks):
-        task_queue.put(task_list[i])
-    completed_tasks, failed_tasks = process_tasks_in_queue(task_queue, charging)
+        task_queue = queue.Queue()
+        task_list = [tc.generate_new_task(id=i, processor=random.choice(processor_list)) for i in range(0, number_of_tasks)]
+        task_list.sort(key=operator.attrgetter('deadline', 'execution_time', 'priority'))
+        for i in range(0, number_of_tasks):
+            task_queue.put(task_list[i])
+        completed_tasks, failed_tasks = process_tasks_in_queue(task_queue, charging)
 
-    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
-                                                                                 "Algorithm 2", number_of_tasks)
+        percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
+                                                                                     "Algorithm 2", number_of_tasks)
 
-    task_queue.queue.clear()
+        task_queue.queue.clear()
 
-    return percent_completed, percent_hit_deadline, awt
+        return percent_completed, percent_hit_deadline, awt
 
 
 def run_algorithm_3_simulation(number_of_tasks, charging=False, number_of_processors=1, supercap=None):
@@ -95,17 +99,21 @@ def run_algorithm_3_simulation(number_of_tasks, charging=False, number_of_proces
     if number_of_processors < 1 or number_of_tasks < 1:
         print('Cannot have tasks with no peripherals or no tasks')
         return -1
+    else:
+        processor_list = []
+        for i in range(number_of_processors):
+            processor_list.append(cm.Processor(id=i, power_available=60, power_max=70))
 
-    task_queue = queue.Queue()
-    task_list = [tc.generate_new_task(id=i) for i in range(0, number_of_tasks)]
-    task_list.sort(key=operator.attrgetter('priority', 'deadline', 'execution_time'))
-    for i in range(0, number_of_tasks):
-        task_queue.put(task_list[i])
+        task_queue = queue.Queue()
+        task_list = [tc.generate_new_task(id=i, processor=random.choice(processor_list)) for i in range(0, number_of_tasks)]
+        task_list.sort(key=operator.attrgetter('priority', 'deadline', 'execution_time'))
+        for i in range(0, number_of_tasks):
+            task_queue.put(task_list[i])
 
-    completed_tasks, failed_tasks = process_tasks_in_queue(task_queue, charging)
-    percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
-                                                                                 "Algorithm 3", number_of_tasks)
+        completed_tasks, failed_tasks = process_tasks_in_queue(task_queue, charging)
+        percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks, failed_tasks,
+                                                                                     "Algorithm 3", number_of_tasks)
 
-    task_queue.queue.clear()
+        task_queue.queue.clear()
 
-    return percent_completed, percent_hit_deadline, awt
+        return percent_completed, percent_hit_deadline, awt
