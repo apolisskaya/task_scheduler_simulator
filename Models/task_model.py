@@ -32,6 +32,9 @@ class Task:
     def change_priority(self, new_priority):
         self.priority = new_priority
 
+    def get_priority(self):
+        return self.priority
+
     def change_status(self):
         self.status += 1
 
@@ -53,7 +56,6 @@ class Task:
             self.hit_deadline = 1
         else:
             self.hit_deadline = 0
-        self.on_processor = None
         self.change_status()
 
     def __repr__(self):

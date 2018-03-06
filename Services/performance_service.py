@@ -17,8 +17,6 @@ def run_performance_evaluation(completed, failed, algorithm, number_of_tasks):
     wt_sum = math.fsum(datetime.timedelta.total_seconds(task.start_time - task.origination_time) for task in completed)
     awt = wt_sum / len(completed)
 
-    # TODO: how to calculate and display throughput here?? Still seems irrelevant
-
     ls.record_algorithm_performance('algorithm_performance.csv', ['Percent Completed', 'Percent Hit Deadline',
                                     'Average Waiting Time', 'Number of Tasks', 'Algorithm', 'Number of Tasks'],
                                     [percent_completed, percent_hit_deadline, awt, len(completed) + len(failed),

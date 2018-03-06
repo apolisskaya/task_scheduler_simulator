@@ -49,6 +49,9 @@ class Processor:
     def get_supercap(self):
         return self.supercap
 
+    def __repr__(self):
+        return 'Processor ID: ' + str(self.id)
+
 
 class SuperCapacitor:  # the supercap and microprocessor are one object for our purposes here
 
