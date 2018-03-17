@@ -19,42 +19,45 @@ algorithm_dict = {
 }
 
 
-def process_tasks_in_queue(task_queue, charging=False, charging_scale=1):
+def process_tasks_in_queue(task_queue, solar_charging=False, charging_scale=1):
     completed_tasks, failed_tasks = [], []
 
     while not task_queue.empty():
         current_task = task_queue.get()
         # check that processor has enough juice to execute the task
         current_processor = current_task.get_processor()
+        supercap = current_processor.get_supercap().battery
         if (current_task.power_demand < current_processor.battery.power_available) and \
                         current_processor.battery.power_available - current_task.power_demand > \
-                        current_processor.battery.power_minimum:
+                        current_processor.battery.power_minimum and supercap and \
+                        supercap.power_available - current_task.execution_time > supercap.power_minimum:
             # set processor to run current task and log start time of task for performance purposes
             tc.assign_task_to_processor(task=current_task, processor=current_processor)
             print('running task ', current_task.id, 'on processor', current_processor.id)
             time.sleep(current_task.execution_time)  # seconds
             # supercap should also lose charge here based on execution time
             current_task.get_processor().run_task(current_task)
-            if charging:
+            if solar_charging:
                 current_processor.battery.charge_capacitor(current_task.execution_time * charging_scale)
-                current_processor.get_supercap().battery.charge_capacitor(current_task.execution_time *
+                supercap.charge_capacitor(current_task.execution_time *
                                                                                      charging_scale)
             current_task.complete_task()
             completed_tasks.append(current_task)
         else:
+            print('Capacitor power failure!')
             failed_tasks.append(current_task)
 
     return completed_tasks, failed_tasks
 
 
-def run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles=1, charging=False, number_of_processors=1,
+def run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles=1, solar_charging=False, number_of_processors=1,
                              tasks=None, processors=None, completed_tasks=[], failed_tasks=[]):
     if number_of_processors < 1 or number_of_tasks < 1 or algorithm not in algorithm_dict:
         print('Improper simulation call, check arguments and try again!')
         return -1
     else:
         if not processors or not tasks:
-            supercap = cm.SuperCapacitor(power_available=150, power_max=200)
+            supercap = cm.SuperCapacitor(power_available=200, power_max=250)
             processor_list = pc.generate_processors(number_of_processors, supercap)
             task_list = [tc.generate_new_task(id=i, processor=random.choice(processor_list)) for i in
                          range(0, number_of_tasks)]
@@ -67,7 +70,7 @@ def run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles=1, cha
         task_list.sort(key=algorithm_dict[algorithm])
         for i in range(0, number_of_tasks):
             task_queue.put(task_list[i])
-        completed_tasks_current_run, failed_tasks_current_run = process_tasks_in_queue(task_queue, charging)
+        completed_tasks_current_run, failed_tasks_current_run = process_tasks_in_queue(task_queue, solar_charging)
 
         task_queue.queue.clear()
 
@@ -75,18 +78,15 @@ def run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles=1, cha
         if number_of_cycles > 0:
             for failed_task in failed_tasks:
                 failed_task.change_priority(failed_task.get_priority() + 1)
-            run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles - 1, charging, number_of_processors,
+            run_algorithm_simulation(algorithm, number_of_tasks, number_of_cycles - 1, solar_charging, number_of_processors,
                                        tasks=completed_tasks_current_run + failed_tasks_current_run, processors=processor_list,
                                        completed_tasks=tc.deep_copy_task_list(completed_tasks_current_run, processor_list) +
                                                        tc.deep_copy_task_list(completed_tasks, processor_list),
                                        failed_tasks=tc.deep_copy_task_list(failed_tasks_current_run, processor_list) +
                                                     tc.deep_copy_task_list(failed_tasks, processor_list))
         else:
-            percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed_tasks +
-                                                            completed_tasks_current_run, failed_tasks +
-                                                            failed_tasks_current_run, "Algorithm " + str(algorithm),
-                                                            len(completed_tasks) + len(completed_tasks_current_run) +
-                                                            len(failed_tasks) + len(failed_tasks_current_run))
+            percent_completed, percent_hit_deadline, awt = ps.run_performance_evaluation(completed=completed_tasks,
+                                                        failed=failed_tasks, algorithm=algorithm)
 
             print(str(percent_completed), 'completed, ', percent_hit_deadline, ' hit deadline, ', awt, ' awt')
             return percent_completed, percent_hit_deadline, awt

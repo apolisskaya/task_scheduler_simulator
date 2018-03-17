@@ -53,16 +53,12 @@ class Task:
 
     def complete_task(self):
         if datetime.datetime.now() <= self.deadline:
-            self.hit_deadline = 1
+            self.hit_deadline = True
         else:
-            self.hit_deadline = 0
+            self.hit_deadline = False
         self.change_status()
 
     def __repr__(self):
         for attribute, value in self.__dict__.items():
             if value is not None:
                 print(attribute, str(value))
-
-    def __del__(self):
-        if self.status != 2:
-            print('Task ', self.id, ' destroyed but never ran. Status', self.status)

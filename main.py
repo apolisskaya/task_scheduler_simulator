@@ -5,11 +5,11 @@ from Models import cpu_model
 
 
 PERFORMANCE_LOG_LOCATION = 'algorithm_performance.csv'
+algorithm_count = 3
 
-for i in range(3):
-    sc.run_algorithm_simulation(algorithm=i+1, number_of_tasks=12, number_of_processors=4, number_of_cycles=5,
-                                charging=True)
+for i in range(algorithm_count):
+    sc.run_algorithm_simulation(algorithm=i+1, number_of_tasks=8, number_of_processors=2, number_of_cycles=5,
+                                solar_charging=True)
 
-# TODO: temporarily commented out until view is fixed
-# if PERFORMANCE_LOG_LOCATION:
-#     mv.display_performance(PERFORMANCE_LOG_LOCATION)
+if PERFORMANCE_LOG_LOCATION:
+    mv.display_performance('algorithm_performance.csv', algorithm_count=algorithm_count)

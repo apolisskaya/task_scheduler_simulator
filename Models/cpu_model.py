@@ -19,7 +19,7 @@ class Battery:
 
 class Processor:
 
-    SUPERCAP_POWER_LOSS_MULTIPLIER = 1  # how fast supercap should lose power
+    SUPERCAP_POWER_LOSS_MULTIPLIER = 5  # how fast supercap should lose power
 
     def __init__(self, power_available, power_max, id=0):
         self.status = 0

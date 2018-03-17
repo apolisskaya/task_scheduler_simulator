@@ -43,5 +43,6 @@ def deep_copy_task_list(task_list, processor_list):
         new_task.status = 0
         new_task.start_time = task.start_time
         new_task_list.append(new_task)
+        new_task.hit_deadline = task.hit_deadline
 
     return new_task_list
