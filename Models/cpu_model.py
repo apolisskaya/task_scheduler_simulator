@@ -70,7 +70,7 @@ class SuperCapacitor:  # the supercap and microprocessor are one object for our 
         if self.battery.power_available - power_deduction > self.battery.power_minimum:
             self.battery.power_available -= power_deduction
         else:
-            print('Not enough power available to keep running Peripheral ', str(self.current_processor))
+            print('Not enough power available to keep running Peripheral ', str(self.current_processor.id))
 
     def add_power(self, power_addition):
         if self.battery.power_available + power_addition <= self.battery.power_max:

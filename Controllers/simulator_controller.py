@@ -1,5 +1,5 @@
 from multiprocessing import Process  # https://stackoverflow.com/questions/3474382/how-do-i-run-two-python-loops-concurrently
-import queue, time, operator, random
+import queue, time, random, operator
 
 from Controllers import task_controller as tc
 from Controllers import processor_controller as pc
@@ -16,6 +16,7 @@ algorithm_dict = {
     1: operator.attrgetter('deadline', 'priority', 'execution_time'),
     2: operator.attrgetter('deadline', 'execution_time', 'priority'),
     3: operator.attrgetter('priority', 'deadline', 'execution_time'),
+    4: operator.attrgetter('power_consumption_times_prio', 'power_demand', 'deadline'),
 }
 
 
@@ -26,6 +27,7 @@ def process_tasks_in_queue(task_queue, solar_charging=False, charging_scale=1):
         current_task = task_queue.get()
         # check that processor has enough juice to execute the task
         current_processor = current_task.get_processor()
+        current_processor.get_supercap().switch_processor(current_processor)
         supercap = current_processor.get_supercap().battery
         if (current_task.power_demand < current_processor.battery.power_available) and \
                         current_processor.battery.power_available - current_task.power_demand > \

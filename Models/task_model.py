@@ -20,6 +20,8 @@ class Task:
         self.hit_deadline = None
         self.origination_time = datetime.datetime.now()  # record the time when the task is created
         self.start_time = None
+        # allow sorting by a combination of priority and energy demand to prevent starvation
+        self.power_consumption_times_prio = (1/self.power_demand) * self.priority
 
     # allows pushing objects with non-unique priority into priority queue
     def __lt__(self, other):

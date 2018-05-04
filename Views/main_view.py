@@ -2,8 +2,10 @@
 import matplotlib.pyplot as plt
 import csv
 
+from Services import display_service as ds
 
-def display_performance(file_path='algorithm_performance.csv', algorithm_count = 3):
+
+def display_performance(file_path, algorithm_count = 4):
 
     """
     We want the following for each of 3 algorithms:
@@ -26,37 +28,29 @@ def display_performance(file_path='algorithm_performance.csv', algorithm_count =
                 algorithm_performance_dict[row[4]][i] += float(row[i])
             task_count += int(row[3])
 
-    for algorithm in algorithm_performance_dict:
-        for param in algorithm_performance_dict[algorithm]:
-            param /= task_count
     f.close()
+
+    algorithm_performance_dict = ds.normalize_display(algorithm_performance_dict)
 
     # Create bars, these are the values of bars of each category/color
     # format will be: barsx = [completed %, deadline met &, awt] for algorithm x
     barWidth = 0.9
-    bars1 = algorithm_performance_dict['1']
-    bars2 = algorithm_performance_dict['2']
-    bars3 = algorithm_performance_dict['3']
-    bars4 = bars1 + bars2 + bars3
-
-    print('bars1:', bars1)
+    bars = [algorithm_performance_dict[i] for i in list(algorithm_performance_dict)]
 
     # order of the bars where r1 is for bars1, r2 for bars2, etc
-    r1 = [1, 4, 7]
-    r2 = [2, 5, 8]
-    r3 = [3, 6, 9]
-    r4 = r1 + r2 + r3
+    r = [[i, i + algorithm_count, i + (2 * algorithm_count)] for i in range(algorithm_count)]
 
     # Create barplot
-    plt.bar(r1, bars1, width=barWidth, color=(0.3, 0.1, 0.4), label='Algorithm 1')
-    plt.bar(r2, bars2, width=barWidth, color=(0.3, 0.5, 0.4), label='Algorithm 2')
-    plt.bar(r3, bars3, width=barWidth, color=(0.3, 0.9, 0.4), label='Algorithm 3')
+    plt.bar(r[0], bars[0], width=barWidth, color=(0.3, 0.1, 0.4), label='Algorithm 1')
+    plt.bar(r[1], bars[1], width=barWidth, color=(0.3, 0.5, 0.4), label='Algorithm 2')
+    plt.bar(r[2], bars[2], width=barWidth, color=(0.3, 0.9, 0.4), label='Algorithm 3')
+    plt.bar(r[3], bars[3], width=barWidth, color=(0.2, 0.5, 0.7), label="Algorithm 4")
 
     # Create legend
     plt.legend()
 
     # Text below each barplot with a rotation at 90°
-    plt.xticks([r + (barWidth * 3) for r in range(3)],
+    plt.xticks([(r+1) * (barWidth * 3) for r in range(3)],
                ['Task Completed', 'Deadline Hit', 'Average Waiting Time'], rotation=90)
 
     # Adjust the margins

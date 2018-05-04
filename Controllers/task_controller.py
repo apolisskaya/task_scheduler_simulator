@@ -20,7 +20,7 @@ def generate_new_task(id=0, processor=None):
     # generate new tasks with variable power demand and priority, and variable deadline
     new_task = Task(cpu_demand=1, power_demand=random.randrange(1, 10), processor=processor,
                     priority=random.randrange(0,10), deadline=datetime.datetime.now() +
-                    datetime.timedelta(seconds=random.randrange(10, 15)), execution_time=random.randrange(1, 5), id=id)
+                    datetime.timedelta(seconds=random.randrange(25, 35)), execution_time=random.randrange(1, 5), id=id)
     return new_task
 
 
